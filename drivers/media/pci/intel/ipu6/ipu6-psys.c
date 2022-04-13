@@ -10,7 +10,11 @@
 #include <linux/kthread.h>
 #include <linux/init_task.h>
 #include <linux/version.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
+#include <linux/sched.h>
+#else
 #include <uapi/linux/sched/types.h>
+#endif
 #include <linux/module.h>
 #include <linux/fs.h>
 
@@ -1030,3 +1034,7 @@ long ipu_ioctl_dqevent(struct ipu_psys_event *event,
 
 	return 0;
 }
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
+MODULE_IMPORT_NS(DMA_BUF);
+#endif
