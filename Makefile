@@ -9,8 +9,8 @@ export CONFIG_VIDEO_OV01A10 = m
 export CONFIG_VIDEO_OV02C10 = m
 obj-y += drivers/media/i2c/
 
-KERNELRELEASE	?= `uname -r`
-KERNEL_SRC := /lib/modules/$(KERNELRELEASE)/build
+KERNELRELEASE ?= $(shell uname -r)
+KERNEL_SRC ?= /lib/modules/$(KERNELRELEASE)/build
 MODSRC := $(shell pwd)
 subdir-ccflags-y += -I$(src)/include/
 
