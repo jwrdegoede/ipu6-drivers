@@ -787,11 +787,19 @@ int ipu_trace_init(struct ipu_device *isp, void __iomem *base,
 	sys->base = base;
 	sys->blocks = blocks;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
 	sys->memory.memory_buffer =
 	    dma_alloc_coherent(dev, MEMORY_RING_BUFFER_SIZE +
 			       MEMORY_RING_BUFFER_GUARD,
 			       &sys->memory.dma_handle,
 			       GFP_KERNEL);
+#else
+	sys->memory.memory_buffer =
+	    dma_alloc_attrs(dev, MEMORY_RING_BUFFER_SIZE +
+			    MEMORY_RING_BUFFER_GUARD,
+			    &sys->memory.dma_handle,
+			    GFP_KERNEL, DMA_ATTR_NON_CONSISTENT);
+#endif
 
 	if (!sys->memory.memory_buffer)
 		dev_err(dev, "failed alloc memory for tracing.\n");
