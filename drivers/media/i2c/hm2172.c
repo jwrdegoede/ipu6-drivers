@@ -15,7 +15,7 @@
 #include <media/v4l2-fwnode.h>
 #include <linux/clk.h>
 #include <linux/gpio/consumer.h>
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 #include <linux/vsc.h>
 
@@ -927,7 +927,7 @@ struct hm2172 {
 	struct gpio_desc *reset;
 	struct gpio_desc *handshake;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	struct vsc_mipi_config conf;
 	struct vsc_camera_status status;
@@ -942,7 +942,7 @@ struct hm2172 {
 
 	/* Streaming on/off */
 	bool streaming;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	bool use_intel_vsc;
 #endif
@@ -1109,7 +1109,7 @@ static int hm2172_set_ctrl(struct v4l2_ctrl *ctrl)
 		ret = hm2172_test_pattern(hm2172, ctrl->val);
 		break;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	case V4L2_CID_PRIVACY:
 		dev_dbg(&client->dev, "set privacy to %d", ctrl->val);
@@ -1142,7 +1142,7 @@ static int hm2172_init_controls(struct hm2172 *hm2172)
 	int ret = 0;
 
 	ctrl_hdlr = &hm2172->ctrl_handler;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	ret = v4l2_ctrl_handler_init(ctrl_hdlr, 9);
 #else
@@ -1183,7 +1183,7 @@ static int hm2172_init_controls(struct hm2172 *hm2172)
 	if (hm2172->hblank)
 		hm2172->hblank->flags |= V4L2_CTRL_FLAG_READ_ONLY;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	hm2172->privacy_status = v4l2_ctrl_new_std(ctrl_hdlr, &hm2172_ctrl_ops,
 						   V4L2_CID_PRIVACY, 0, 1, 1,
@@ -1223,7 +1223,7 @@ static void hm2172_update_pad_format(const struct hm2172_mode *mode,
 	fmt->field = V4L2_FIELD_NONE;
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 static void hm2172_vsc_privacy_callback(void *handle,
 				       enum vsc_privacy_status status)
@@ -1309,7 +1309,7 @@ static int hm2172_power_off(struct device *dev)
 	struct hm2172 *hm2172 = to_hm2172(sd);
 	int ret = 0;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	if (hm2172->use_intel_vsc) {
 		ret = vsc_release_camera_sensor(&hm2172->status);
@@ -1336,7 +1336,7 @@ static int hm2172_power_on(struct device *dev)
 	struct hm2172 *hm2172 = to_hm2172(sd);
 	int ret;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	if (hm2172->use_intel_vsc) {
 		hm2172->conf.lane_num = HM2172_DATA_LANES;
@@ -1392,7 +1392,7 @@ static int hm2172_get_pm_resources(struct device *dev)
 	struct hm2172 *hm2172 = to_hm2172(sd);
 	int ret = 0;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	acpi_handle handle = ACPI_HANDLE(dev);
 	struct acpi_handle_list dep_devices;

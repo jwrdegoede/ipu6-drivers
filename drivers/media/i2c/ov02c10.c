@@ -13,7 +13,7 @@
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-fwnode.h>
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
 IS_ENABLED(CONFIG_INTEL_VSC)
 #include <linux/vsc.h>
 
@@ -697,7 +697,7 @@ struct ov02c10 {
 	struct gpio_desc *reset;
 	struct gpio_desc *handshake;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
 IS_ENABLED(CONFIG_INTEL_VSC)
 	struct vsc_mipi_config conf;
 	struct vsc_camera_status status;
@@ -717,7 +717,7 @@ IS_ENABLED(CONFIG_INTEL_VSC)
 
 	/* Module name index */
 	u8 module_name_index;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
 IS_ENABLED(CONFIG_INTEL_VSC)
 
 	bool use_intel_vsc;
@@ -857,7 +857,7 @@ static int ov02c10_set_ctrl(struct v4l2_ctrl *ctrl)
 		ret = ov02c10_test_pattern(ov02c10, ctrl->val);
 		break;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
 IS_ENABLED(CONFIG_INTEL_VSC)
 	case V4L2_CID_PRIVACY:
 		dev_dbg(&client->dev, "set privacy to %d", ctrl->val);
@@ -888,7 +888,7 @@ static int ov02c10_init_controls(struct ov02c10 *ov02c10)
 	int ret = 0;
 
 	ctrl_hdlr = &ov02c10->ctrl_handler;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
 IS_ENABLED(CONFIG_INTEL_VSC)
 	ret = v4l2_ctrl_handler_init(ctrl_hdlr, 9);
 #else
@@ -926,7 +926,7 @@ IS_ENABLED(CONFIG_INTEL_VSC)
 					    1, h_blank);
 	if (ov02c10->hblank)
 		ov02c10->hblank->flags |= V4L2_CTRL_FLAG_READ_ONLY;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
 IS_ENABLED(CONFIG_INTEL_VSC)
 	ov02c10->privacy_status = v4l2_ctrl_new_std(ctrl_hdlr,
 						    &ov02c10_ctrl_ops,
@@ -1102,7 +1102,7 @@ static int ov02c10_get_pm_resources(struct device *dev)
 	struct ov02c10 *ov02c10 = to_ov02c10(sd);
 	int ret;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
 IS_ENABLED(CONFIG_INTEL_VSC)
 	acpi_handle handle = ACPI_HANDLE(dev);
 	struct acpi_handle_list deps;
@@ -1162,7 +1162,7 @@ IS_ENABLED(CONFIG_INTEL_VSC)
 	return 0;
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
 IS_ENABLED(CONFIG_INTEL_VSC)
 static void ov02c10_vsc_privacy_callback(void *handle,
 				       enum vsc_privacy_status status)
@@ -1179,7 +1179,7 @@ static int ov02c10_power_off(struct device *dev)
 	struct ov02c10 *ov02c10 = to_ov02c10(sd);
 	int ret = 0;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
 IS_ENABLED(CONFIG_INTEL_VSC)
 	if (ov02c10->use_intel_vsc) {
 		ret = vsc_release_camera_sensor(&ov02c10->status);
@@ -1206,7 +1206,7 @@ static int ov02c10_power_on(struct device *dev)
 	struct ov02c10 *ov02c10 = to_ov02c10(sd);
 	int ret;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
 IS_ENABLED(CONFIG_INTEL_VSC)
 	if (ov02c10->use_intel_vsc) {
 		ov02c10->conf.lane_num = ov02c10->mipi_lanes;

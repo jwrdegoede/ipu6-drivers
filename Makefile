@@ -20,15 +20,16 @@ version_lt = $(shell \
         echo "false"; \
     fi)
 
-KV_IVSC := 6.6.0
-KV_IPU_BRIDGE := 6.6.0
-KV_OV2740 := 6.8.0
+KV_LJCA := 6.7.0
+KV_IVSC := 6.10.0
+KV_IPU_BRIDGE := 6.10.0
+KV_OV2740 := 6.10.0
 
 KERNEL_SRC ?= /lib/modules/$(KERNELRELEASE)/build
 MODSRC := $(shell pwd)
 
-ifeq ($(call version_lt,$(KERNEL_VERSION),$(KV_IVSC)),true)
-$(warning build ljca ivsc)
+ifeq ($(call version_lt,$(KERNEL_VERSION),$(KV_LJCA)),true)
+$(warning build ljca)
 obj-m += ljca.o
 ljca-y := drivers/mfd/ljca.o
 
@@ -40,7 +41,10 @@ gpio-ljca-y := drivers/gpio/gpio-ljca.o
 
 obj-m += i2c-ljca.o
 i2c-ljca-y := drivers/i2c/busses/i2c-ljca.o
+endif
 
+ifeq ($(call version_lt,$(KERNEL_VERSION),$(KV_IVSC)),true)
+$(warning build ivsc)
 obj-m += mei-vsc.o
 mei-vsc-y := drivers/misc/mei/spi-vsc.o
 mei-vsc-y += drivers/misc/mei/hw-vsc.o
@@ -77,16 +81,16 @@ obj-y += drivers/media/pci/intel/
 
 export CONFIG_VIDEO_HM11B1 = m
 export CONFIG_VIDEO_OV01A1S = m
-export CONFIG_VIDEO_OV01A10 = m
 export CONFIG_VIDEO_OV02C10 = m
 export CONFIG_VIDEO_OV02E10 = m
 export CONFIG_VIDEO_HM2170 = m
 export CONFIG_VIDEO_HM2172 = m
-export CONFIG_VIDEO_HI556 = m
 export CONFIG_VIDEO_GC5035 = m
 
 ifeq ($(call version_lt,$(KERNEL_VERSION),$(KV_OV2740)),true)
-export CONFIG_VIDEO_OV2740 = m
+export CONFIG_ICAMERA_OV2740 = m
+export CONFIG_ICAMERA_OV01A10 = m
+export CONFIG_ICAMERA_HI556 = m
 endif
 obj-y += drivers/media/i2c/
 

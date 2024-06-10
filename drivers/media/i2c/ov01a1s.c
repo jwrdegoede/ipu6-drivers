@@ -17,7 +17,7 @@
 #elif IS_ENABLED(CONFIG_POWER_CTRL_LOGIC)
 #include "power_ctrl_logic.h"
 #endif
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 #include <linux/vsc.h>
 #endif
@@ -303,7 +303,7 @@ struct ov01a1s {
 	struct v4l2_ctrl *vblank;
 	struct v4l2_ctrl *hblank;
 	struct v4l2_ctrl *exposure;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	struct v4l2_ctrl *privacy_status;
 
@@ -337,7 +337,7 @@ struct ov01a1s {
 #if IS_ENABLED(CONFIG_INTEL_SKL_INT3472) || IS_ENABLED(CONFIG_POWER_CTRL_LOGIC)
 		OV01A1S_USE_INT3472 = 1,
 #endif
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 		OV01A1S_USE_INTEL_VSC = 2,
 #endif
@@ -508,7 +508,7 @@ static int ov01a1s_set_ctrl(struct v4l2_ctrl *ctrl)
 		ret = ov01a1s_test_pattern(ov01a1s, ctrl->val);
 		break;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	case V4L2_CID_PRIVACY:
 		dev_dbg(&client->dev, "set privacy to %d", ctrl->val);
@@ -539,7 +539,7 @@ static int ov01a1s_init_controls(struct ov01a1s *ov01a1s)
 	int ret = 0;
 
 	ctrl_hdlr = &ov01a1s->ctrl_handler;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	ret = v4l2_ctrl_handler_init(ctrl_hdlr, 9);
 #else
@@ -577,7 +577,7 @@ static int ov01a1s_init_controls(struct ov01a1s *ov01a1s)
 					    1, h_blank);
 	if (ov01a1s->hblank)
 		ov01a1s->hblank->flags |= V4L2_CTRL_FLAG_READ_ONLY;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	ov01a1s->privacy_status = v4l2_ctrl_new_std(ctrl_hdlr,
 						    &ov01a1s_ctrl_ops,
@@ -619,7 +619,7 @@ static void ov01a1s_update_pad_format(const struct ov01a1s_mode *mode,
 	fmt->field = V4L2_FIELD_NONE;
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 static void ov01a1s_vsc_privacy_callback(void *handle,
 				       enum vsc_privacy_status status)
@@ -729,7 +729,7 @@ static int ov01a1s_power_off(struct device *dev)
 	if (ov01a1s->power_type == OV01A1S_USE_INT3472)
 		ret = power_ctrl_logic_set_power(0);
 #endif
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	if (ov01a1s->power_type == OV01A1S_USE_INTEL_VSC) {
 		ret = vsc_release_camera_sensor(&ov01a1s->status);
@@ -764,7 +764,7 @@ static int ov01a1s_power_on(struct device *dev)
 	if (ov01a1s->power_type == OV01A1S_USE_INT3472)
 		ret = power_ctrl_logic_set_power(1);
 #endif
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	if (ov01a1s->power_type == OV01A1S_USE_INTEL_VSC) {
 		ret = vsc_acquire_camera_sensor(&ov01a1s->conf,
@@ -1125,7 +1125,7 @@ static int ov01a1s_parse_power(struct ov01a1s *ov01a1s)
 {
 	int ret = 0;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	ov01a1s->conf.lane_num = OV01A1S_DATA_LANES;
 	/* frequency unit 100k */

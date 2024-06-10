@@ -13,7 +13,7 @@
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-fwnode.h>
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 #include <linux/vsc.h>
 #endif
@@ -615,7 +615,7 @@ struct hm2170 {
 	struct v4l2_ctrl *vblank;
 	struct v4l2_ctrl *hblank;
 	struct v4l2_ctrl *exposure;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	struct vsc_mipi_config conf;
 	struct vsc_camera_status status;
@@ -792,7 +792,7 @@ static int hm2170_set_ctrl(struct v4l2_ctrl *ctrl)
 		ret = hm2170_test_pattern(hm2170, ctrl->val);
 		break;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	case V4L2_CID_PRIVACY:
 		dev_dbg(&client->dev, "set privacy to %d", ctrl->val);
@@ -825,7 +825,7 @@ static int hm2170_init_controls(struct hm2170 *hm2170)
 	int ret = 0;
 
 	ctrl_hdlr = &hm2170->ctrl_handler;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	ret = v4l2_ctrl_handler_init(ctrl_hdlr, 9);
 #else
@@ -864,7 +864,7 @@ static int hm2170_init_controls(struct hm2170 *hm2170)
 					   h_blank);
 	if (hm2170->hblank)
 		hm2170->hblank->flags |= V4L2_CTRL_FLAG_READ_ONLY;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	hm2170->privacy_status = v4l2_ctrl_new_std(ctrl_hdlr, &hm2170_ctrl_ops,
 						   V4L2_CID_PRIVACY, 0, 1, 1,
@@ -904,7 +904,7 @@ static void hm2170_update_pad_format(const struct hm2170_mode *mode,
 	fmt->field = V4L2_FIELD_NONE;
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 static void hm2170_vsc_privacy_callback(void *handle,
 					enum vsc_privacy_status status)
@@ -984,7 +984,7 @@ static int hm2170_set_stream(struct v4l2_subdev *sd, int enable)
 	return ret;
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 static int hm2170_power_off(struct device *dev)
 {
@@ -1323,7 +1323,7 @@ static int hm2170_probe(struct i2c_client *client)
 	}
 
 	v4l2_i2c_subdev_init(&hm2170->sd, client, &hm2170_subdev_ops);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	hm2170->conf.lane_num = HM2170_DATA_LANES;
 	/* frequency unit 100k */
@@ -1389,7 +1389,7 @@ probe_error_v4l2_ctrl_handler_free:
 	mutex_destroy(&hm2170->mutex);
 
 probe_error_ret:
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	hm2170_power_off(&client->dev);
 #endif
@@ -1399,7 +1399,7 @@ probe_error_ret:
 
 static const struct dev_pm_ops hm2170_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(hm2170_suspend, hm2170_resume)
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	SET_RUNTIME_PM_OPS(hm2170_power_off, hm2170_power_on, NULL)
 #endif

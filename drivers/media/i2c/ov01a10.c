@@ -11,7 +11,7 @@
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-fwnode.h>
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 #include <linux/vsc.h>
 #endif
@@ -296,7 +296,7 @@ struct ov01a10 {
 	/* To serialize asynchronus callbacks */
 	struct mutex mutex;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	struct vsc_mipi_config conf;
 	struct vsc_camera_status status;
@@ -469,7 +469,7 @@ static int ov01a10_set_ctrl(struct v4l2_ctrl *ctrl)
 		ret = ov01a10_test_pattern(ov01a10, ctrl->val);
 		break;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	case V4L2_CID_PRIVACY:
 		dev_dbg(&client->dev, "set privacy to %d", ctrl->val);
@@ -500,7 +500,7 @@ static int ov01a10_init_controls(struct ov01a10 *ov01a10)
 	int ret = 0;
 
 	ctrl_hdlr = &ov01a10->ctrl_handler;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	ret = v4l2_ctrl_handler_init(ctrl_hdlr, 9);
 #else
@@ -539,7 +539,7 @@ static int ov01a10_init_controls(struct ov01a10 *ov01a10)
 	if (ov01a10->hblank)
 		ov01a10->hblank->flags |= V4L2_CTRL_FLAG_READ_ONLY;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	ov01a10->privacy_status = v4l2_ctrl_new_std(ctrl_hdlr,
 						    &ov01a10_ctrl_ops,
@@ -661,7 +661,7 @@ static int ov01a10_set_stream(struct v4l2_subdev *sd, int enable)
 	return ret;
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 static void ov01a10_vsc_privacy_callback(void *handle,
 				       enum vsc_privacy_status status)
@@ -1016,7 +1016,7 @@ static int ov01a10_probe(struct i2c_client *client)
 		return -ENOMEM;
 
 	v4l2_i2c_subdev_init(&ov01a10->sd, client, &ov01a10_subdev_ops);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	ov01a10->conf.lane_num = OV01A10_DATA_LANES;
 	/* frequency unit 100k */
@@ -1082,7 +1082,7 @@ probe_error_v4l2_ctrl_handler_free:
 	mutex_destroy(&ov01a10->mutex);
 
 probe_error_ret:
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	ov01a10_power_off(&client->dev);
 #endif
@@ -1092,7 +1092,7 @@ probe_error_ret:
 
 static const struct dev_pm_ops ov01a10_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(ov01a10_suspend, ov01a10_resume)
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	SET_RUNTIME_PM_OPS(ov01a10_power_off, ov01a10_power_on, NULL)
 #endif

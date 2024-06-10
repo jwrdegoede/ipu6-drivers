@@ -12,7 +12,7 @@
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-fwnode.h>
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 #include <linux/vsc.h>
 
@@ -510,7 +510,7 @@ struct hi556 {
 	/* Clock provider */
 	struct clk *img_clk;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	struct vsc_mipi_config conf;
 	struct vsc_camera_status status;
@@ -527,7 +527,7 @@ struct hi556 {
 
 	/* True if the device has been identified */
 	bool identified;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	bool use_intel_vsc;
 #endif
@@ -704,7 +704,7 @@ static int hi556_set_ctrl(struct v4l2_ctrl *ctrl)
 		ret = hi556_test_pattern(hi556, ctrl->val);
 		break;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	case V4L2_CID_PRIVACY:
 		dev_dbg(&client->dev, "set privacy to %d", ctrl->val);
@@ -732,7 +732,7 @@ static int hi556_init_controls(struct hi556 *hi556)
 	int ret;
 
 	ctrl_hdlr = &hi556->ctrl_handler;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	ret = v4l2_ctrl_handler_init(ctrl_hdlr, 9);
 #else
@@ -771,7 +771,7 @@ static int hi556_init_controls(struct hi556 *hi556)
 					  h_blank);
 	if (hi556->hblank)
 		hi556->hblank->flags |= V4L2_CTRL_FLAG_READ_ONLY;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	hi556->privacy_status = v4l2_ctrl_new_std(ctrl_hdlr, &hi556_ctrl_ops,
 						  V4L2_CID_PRIVACY, 0, 1, 1,
@@ -836,7 +836,7 @@ static int hi556_identify_module(struct hi556 *hi556)
 	return 0;
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 static void hi556_vsc_privacy_callback(void *handle,
 				       enum vsc_privacy_status status)
@@ -936,7 +936,7 @@ static int hi556_power_off(struct device *dev)
 	struct hi556 *hi556 = to_hi556(sd);
 	int ret = 0;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	if (hi556->use_intel_vsc) {
 		ret = vsc_release_camera_sensor(&hi556->status);
@@ -961,7 +961,7 @@ static int hi556_power_on(struct device *dev)
 	struct hi556 *hi556 = to_hi556(sd);
 	int ret;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	if (hi556->use_intel_vsc) {
 		hi556->conf.lane_num = HI556_DATA_LANES;
@@ -1217,7 +1217,7 @@ static int hi556_get_pm_resources(struct device *dev)
 	struct hi556 *hi556 = to_hi556(sd);
 	int ret;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0) && \
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0) && \
     IS_ENABLED(CONFIG_INTEL_VSC)
 	acpi_handle handle = ACPI_HANDLE(dev);
 	struct acpi_handle_list dep_devices;
