@@ -22,6 +22,8 @@ obj-$(CONFIG_VIDEO_INTEL_IPU6)		+= intel-ipu6-psys.o
 
 ifeq ($(is_kernel_lt_6_10), 1)
 ccflags-y += -I$(src)/../ipu6/
+else
+ccflags-y += -I/lib/modules/$(KERNELRELEASE)/build/drivers/media/pci/intel/ipu6/
 endif
 ccflags-y += -I$(src)/../
 ccflags-y += -I$(src)/../../
