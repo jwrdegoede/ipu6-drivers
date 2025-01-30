@@ -114,6 +114,17 @@ ifeq ($(call version_lt,$(KERNEL_VERSION),$(KV_IVSC)),true)
 ccflags-y += -I$(src)/backport-include/drivers/misc/mei/
 endif
 
+# begin integrate usbio-drivers within ipu6-drivers Makefile
+obj-m += usbio.o
+usbio-y := drivers/mfd/usbio.o
+
+obj-m += gpio-usbio.o
+gpio-usbio-y := drivers/gpio/gpio-usbio.o
+
+obj-m += i2c-usbio.o
+i2c-usbio-y := drivers/i2c/busses/i2c-usbio.o
+# end integrate usbio-drivers within ipu6-drivers Makefile
+
 subdir-ccflags-y += -I$(src)/include/ \
 	-DCONFIG_VIDEO_V4L2_SUBDEV_API
 
