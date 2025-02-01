@@ -9,6 +9,10 @@
 
 #include "ipu6-ppg.h"
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
+#include "ipu6-dma.h"
+#endif
+
 static bool enable_suspend_resume;
 module_param(enable_suspend_resume, bool, 0664);
 MODULE_PARM_DESC(enable_suspend_resume, "enable fw ppg suspend/resume api");
@@ -75,8 +79,11 @@ __get_buf_set(struct ipu_psys_fh *fh, size_t buf_set_size)
 	kbuf_set->kaddr = dma_alloc_attrs(&fh->psys->adev->dev,
 					  buf_set_size, &kbuf_set->dma_addr,
 					  GFP_KERNEL, 0);
-#else
+#elif LINUX_VERSION_CODE < KERNEL_VERSION(6, 12, 0)
 	kbuf_set->kaddr = dma_alloc_attrs(dev, buf_set_size,
+					  &kbuf_set->dma_addr, GFP_KERNEL, 0);
+#else
+	kbuf_set->kaddr = ipu6_dma_alloc(to_ipu6_bus_device(dev), buf_set_size,
 					  &kbuf_set->dma_addr, GFP_KERNEL, 0);
 #endif
 	if (!kbuf_set->kaddr) {

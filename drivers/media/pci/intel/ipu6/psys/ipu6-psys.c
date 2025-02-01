@@ -32,6 +32,10 @@
 #include "ipu6-platform-buttress-regs.h"
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
+#include "ipu6-dma.h"
+#endif
+
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6, 13, 0)
 MODULE_IMPORT_NS(DMA_BUF);
 #else
@@ -450,10 +454,12 @@ static struct ipu_psys_kcmd *ipu_psys_copy_cmd(struct ipu_psys_command *cmd,
 				       kcmd->kbufs[i]->sgt->sgl,
 				       kcmd->kbufs[i]->sgt->orig_nents,
 				       DMA_BIDIRECTIONAL);
-#else
+#elif LINUX_VERSION_CODE < KERNEL_VERSION(6, 12, 0)
 		dma_sync_sg_for_device(dev, kcmd->kbufs[i]->sgt->sgl,
 				       kcmd->kbufs[i]->sgt->orig_nents,
 				       DMA_BIDIRECTIONAL);
+#else
+		ipu6_dma_sync_sgtable(psys->adev, kcmd->kbufs[i]->sgt);
 #endif
 	}
 
@@ -1102,11 +1108,16 @@ int ipu_psys_fh_init(struct ipu_psys_fh *fh)
 						  &kbuf_set->dma_addr,
 						  GFP_KERNEL,
 						  0);
-#else
+#elif LINUX_VERSION_CODE < KERNEL_VERSION(6, 12, 0)
 		kbuf_set->kaddr = dma_alloc_attrs(dev,
 						  IPU_PSYS_BUF_SET_MAX_SIZE,
 						  &kbuf_set->dma_addr,
 						  GFP_KERNEL, 0);
+#else
+		kbuf_set->kaddr = ipu6_dma_alloc(to_ipu6_bus_device(dev),
+						 IPU_PSYS_BUF_SET_MAX_SIZE,
+						 &kbuf_set->dma_addr,
+						 GFP_KERNEL, 0);
 #endif
 		if (!kbuf_set->kaddr) {
 			kfree(kbuf_set);
@@ -1124,8 +1135,11 @@ out_free_buf_sets:
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0)
 		dma_free_attrs(&psys->adev->dev,
 			       kbuf_set->size, kbuf_set->kaddr,
-#else
+#elif LINUX_VERSION_CODE < KERNEL_VERSION(6, 12, 0)
 		dma_free_attrs(dev, kbuf_set->size, kbuf_set->kaddr,
+#else
+		ipu6_dma_free(to_ipu6_bus_device(dev),
+			       kbuf_set->size, kbuf_set->kaddr,
 #endif
 			       kbuf_set->dma_addr, 0);
 		list_del(&kbuf_set->list);
@@ -1229,8 +1243,11 @@ int ipu_psys_fh_deinit(struct ipu_psys_fh *fh)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0)
 		dma_free_attrs(&psys->adev->dev,
 			       kbuf_set->size, kbuf_set->kaddr,
-#else
+#elif LINUX_VERSION_CODE < KERNEL_VERSION(6, 12, 0)
 		dma_free_attrs(dev, kbuf_set->size, kbuf_set->kaddr,
+#else
+		ipu6_dma_free(to_ipu6_bus_device(dev),
+			       kbuf_set->size, kbuf_set->kaddr,
 #endif
 			       kbuf_set->dma_addr, 0);
 		list_del(&kbuf_set->list);
